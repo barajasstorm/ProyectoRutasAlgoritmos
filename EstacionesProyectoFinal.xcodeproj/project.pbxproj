@@ -8,23 +8,41 @@
 
 /* Begin PBXBuildFile section */
 		1DCEFC0E1FCE13C300FA5F48 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1DCEFC0D1FCE13C300FA5F48 /* main.cpp */; };
+		1DCEFC171FCE144200FA5F48 /* libmysqlcppconn.7.1.1.9.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DCEFC151FCE144200FA5F48 /* libmysqlcppconn.7.1.1.9.dylib */; settings = {ATTRIBUTES = (Weak, ); }; };
+		1DCEFC181FCE144200FA5F48 /* libmysqlcppconn-static.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DCEFC161FCE144200FA5F48 /* libmysqlcppconn-static.a */; settings = {ATTRIBUTES = (Weak, ); }; };
+		1DEDE5CB1FCF5F38004449C7 /* database_connector.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1DEDE5C91FCF5F38004449C7 /* database_connector.cpp */; };
+		1DEDE5CE1FCF7349004449C7 /* matrices.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1DEDE5CC1FCF7349004449C7 /* matrices.cpp */; };
+		1DEDE5D11FCF9707004449C7 /* estaciones.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1DEDE5CF1FCF9707004449C7 /* estaciones.cpp */; };
+		1DEDE5D41FCF9BAA004449C7 /* pathsolver.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1DEDE5D21FCF9BAA004449C7 /* pathsolver.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
 		1DCEFC081FCE13C300FA5F48 /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = /usr/share/man/man1/;
-			dstSubfolderSpec = 0;
+			buildActionMask = 12;
+			dstPath = "";
+			dstSubfolderSpec = 10;
 			files = (
 			);
-			runOnlyForDeploymentPostprocessing = 1;
+			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		1DCEFC0A1FCE13C300FA5F48 /* EstacionesProyectoFinal */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = EstacionesProyectoFinal; sourceTree = BUILT_PRODUCTS_DIR; };
 		1DCEFC0D1FCE13C300FA5F48 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
+		1DCEFC151FCE144200FA5F48 /* libmysqlcppconn.7.1.1.9.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libmysqlcppconn.7.1.1.9.dylib; path = "../../../Downloads/mysql-connector-c++-1.1.9-macos10.12-x86-64bit/lib/libmysqlcppconn.7.1.1.9.dylib"; sourceTree = "<group>"; };
+		1DCEFC161FCE144200FA5F48 /* libmysqlcppconn-static.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libmysqlcppconn-static.a"; path = "../../../Downloads/mysql-connector-c++-1.1.9-macos10.12-x86-64bit/lib/libmysqlcppconn-static.a"; sourceTree = "<group>"; };
+		1DCEFC261FCE231600FA5F48 /* libmysqlcppconn.7.1.1.9.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libmysqlcppconn.7.1.1.9.dylib; path = ../../../mysql/lib/libmysqlcppconn.7.1.1.9.dylib; sourceTree = "<group>"; };
+		1DCEFC271FCE231600FA5F48 /* libmysqlcppconn-static.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libmysqlcppconn-static.a"; path = "../../../mysql/lib/libmysqlcppconn-static.a"; sourceTree = "<group>"; };
+		1DEDE5C91FCF5F38004449C7 /* database_connector.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = database_connector.cpp; sourceTree = "<group>"; };
+		1DEDE5CA1FCF5F38004449C7 /* database_connector.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = database_connector.hpp; sourceTree = "<group>"; };
+		1DEDE5CC1FCF7349004449C7 /* matrices.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = matrices.cpp; sourceTree = "<group>"; };
+		1DEDE5CD1FCF7349004449C7 /* matrices.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = matrices.hpp; sourceTree = "<group>"; };
+		1DEDE5CF1FCF9707004449C7 /* estaciones.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = estaciones.cpp; sourceTree = "<group>"; };
+		1DEDE5D01FCF9707004449C7 /* estaciones.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = estaciones.hpp; sourceTree = "<group>"; };
+		1DEDE5D21FCF9BAA004449C7 /* pathsolver.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = pathsolver.cpp; sourceTree = "<group>"; };
+		1DEDE5D31FCF9BAA004449C7 /* pathsolver.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = pathsolver.hpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -32,6 +50,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1DCEFC171FCE144200FA5F48 /* libmysqlcppconn.7.1.1.9.dylib in Frameworks */,
+				1DCEFC181FCE144200FA5F48 /* libmysqlcppconn-static.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -41,8 +61,10 @@
 		1DCEFC011FCE13C300FA5F48 = {
 			isa = PBXGroup;
 			children = (
+				1DEDE5DA1FD39DEC004449C7 /* Archivos */,
 				1DCEFC0C1FCE13C300FA5F48 /* EstacionesProyectoFinal */,
 				1DCEFC0B1FCE13C300FA5F48 /* Products */,
+				1DCEFC141FCE144200FA5F48 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -58,8 +80,34 @@
 			isa = PBXGroup;
 			children = (
 				1DCEFC0D1FCE13C300FA5F48 /* main.cpp */,
+				1DEDE5C91FCF5F38004449C7 /* database_connector.cpp */,
+				1DEDE5CA1FCF5F38004449C7 /* database_connector.hpp */,
+				1DEDE5CC1FCF7349004449C7 /* matrices.cpp */,
+				1DEDE5CD1FCF7349004449C7 /* matrices.hpp */,
+				1DEDE5CF1FCF9707004449C7 /* estaciones.cpp */,
+				1DEDE5D01FCF9707004449C7 /* estaciones.hpp */,
+				1DEDE5D21FCF9BAA004449C7 /* pathsolver.cpp */,
+				1DEDE5D31FCF9BAA004449C7 /* pathsolver.hpp */,
 			);
 			path = EstacionesProyectoFinal;
+			sourceTree = "<group>";
+		};
+		1DCEFC141FCE144200FA5F48 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				1DCEFC271FCE231600FA5F48 /* libmysqlcppconn-static.a */,
+				1DCEFC261FCE231600FA5F48 /* libmysqlcppconn.7.1.1.9.dylib */,
+				1DCEFC161FCE144200FA5F48 /* libmysqlcppconn-static.a */,
+				1DCEFC151FCE144200FA5F48 /* libmysqlcppconn.7.1.1.9.dylib */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		1DEDE5DA1FD39DEC004449C7 /* Archivos */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Archivos;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -119,7 +167,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1DEDE5CB1FCF5F38004449C7 /* database_connector.cpp in Sources */,
+				1DEDE5D11FCF9707004449C7 /* estaciones.cpp in Sources */,
+				1DEDE5CE1FCF7349004449C7 /* matrices.cpp in Sources */,
 				1DCEFC0E1FCE13C300FA5F48 /* main.cpp in Sources */,
+				1DEDE5D41FCF9BAA004449C7 /* pathsolver.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -233,6 +285,18 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
+				HEADER_SEARCH_PATHS = (
+					/usr/local/Cellar/boost/1.65.1/include,
+					/Users/juanba/Documents/workspace/EstacionesProyectoFinal/EstacionesProyectoFinal/cppconn,
+					/Users/juanba/Documents/workspace/EstacionesProyectoFinal/EstacionesProyectoFinal,
+					/Users/juanba/mysql/include,
+				);
+				LIBRARY_SEARCH_PATHS = (
+					/usr/local/Cellar/boost/1.65.1/lib,
+					/Users/juanba/Documents/workspace/EstacionesProyectoFinal/EstacionesProyectoFinal/cppconn,
+					/Users/juanba/Documents/workspace/EstacionesProyectoFinal/EstacionesProyectoFinal,
+					/Users/juanba/mysql/lib,
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -241,6 +305,18 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
+				HEADER_SEARCH_PATHS = (
+					/usr/local/Cellar/boost/1.65.1/include,
+					/Users/juanba/Documents/workspace/EstacionesProyectoFinal/EstacionesProyectoFinal/cppconn,
+					/Users/juanba/Documents/workspace/EstacionesProyectoFinal/EstacionesProyectoFinal,
+					/Users/juanba/mysql/include,
+				);
+				LIBRARY_SEARCH_PATHS = (
+					/usr/local/Cellar/boost/1.65.1/lib,
+					/Users/juanba/Documents/workspace/EstacionesProyectoFinal/EstacionesProyectoFinal/cppconn,
+					/Users/juanba/Documents/workspace/EstacionesProyectoFinal/EstacionesProyectoFinal,
+					/Users/juanba/mysql/lib,
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;
