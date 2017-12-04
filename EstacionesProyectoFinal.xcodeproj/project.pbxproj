@@ -14,6 +14,7 @@
 		1DEDE5CE1FCF7349004449C7 /* matrices.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1DEDE5CC1FCF7349004449C7 /* matrices.cpp */; };
 		1DEDE5D11FCF9707004449C7 /* estaciones.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1DEDE5CF1FCF9707004449C7 /* estaciones.cpp */; };
 		1DEDE5D41FCF9BAA004449C7 /* pathsolver.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1DEDE5D21FCF9BAA004449C7 /* pathsolver.cpp */; };
+		1DEDE5DD1FD4EE7B004449C7 /* interest_points.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1DEDE5DB1FD4EE7B004449C7 /* interest_points.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -43,6 +44,8 @@
 		1DEDE5D01FCF9707004449C7 /* estaciones.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = estaciones.hpp; sourceTree = "<group>"; };
 		1DEDE5D21FCF9BAA004449C7 /* pathsolver.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = pathsolver.cpp; sourceTree = "<group>"; };
 		1DEDE5D31FCF9BAA004449C7 /* pathsolver.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = pathsolver.hpp; sourceTree = "<group>"; };
+		1DEDE5DB1FD4EE7B004449C7 /* interest_points.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = interest_points.cpp; sourceTree = "<group>"; };
+		1DEDE5DC1FD4EE7B004449C7 /* interest_points.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = interest_points.hpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -88,6 +91,8 @@
 				1DEDE5D01FCF9707004449C7 /* estaciones.hpp */,
 				1DEDE5D21FCF9BAA004449C7 /* pathsolver.cpp */,
 				1DEDE5D31FCF9BAA004449C7 /* pathsolver.hpp */,
+				1DEDE5DB1FD4EE7B004449C7 /* interest_points.cpp */,
+				1DEDE5DC1FD4EE7B004449C7 /* interest_points.hpp */,
 			);
 			path = EstacionesProyectoFinal;
 			sourceTree = "<group>";
@@ -167,6 +172,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1DEDE5DD1FD4EE7B004449C7 /* interest_points.cpp in Sources */,
 				1DEDE5CB1FCF5F38004449C7 /* database_connector.cpp in Sources */,
 				1DEDE5D11FCF9707004449C7 /* estaciones.cpp in Sources */,
 				1DEDE5CE1FCF7349004449C7 /* matrices.cpp in Sources */,

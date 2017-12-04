@@ -14,6 +14,9 @@
 #include <cppconn/exception.h>
 #include <cppconn/resultset.h>
 #include <cppconn/statement.h>
+#include "interest_points.hpp"
+
+
 
 using namespace std;
 
@@ -99,6 +102,7 @@ Pathsolver::Pathsolver(sql::Connection *connection, string inicio, string fin,in
     }while(failure == true);
     
     //Solve best route
+    loadInterestPoints();
     solve();
     
 }
@@ -107,16 +111,14 @@ void Pathsolver::solve() {
     
     //If they are both on the same line
     if(sameLineVerify()) {
-
+        
         int start = inicio.getPk_estacionid();
         int end = fin.getPk_estacionid();
         bool floydNeeded = false;
         bool reverse = ((start < end) ? false : true);
-        int* startPointer = &start;
-        int* endPointer = &end;
 
         //Add stations to ruta list
-        floydNeeded = sameLineSolve(startPointer, endPointer, &reverse);
+        floydNeeded = sameLineSolve(&this->ruta, &start, &end, &reverse);
 
         //If floyd is needed, then call floyd function
         if(floydNeeded) {
@@ -126,57 +128,259 @@ void Pathsolver::solve() {
                 for(int i = 0; i < insertIndex; i++) pointerRuta++;
                 ruta.insert(--pointerRuta, allStations.at(start));
             } else {
-                 floyd(start, end, reverse);
+                 floyd(&this->ruta, start, end, &this->insertIndex);
             }
         }
+        printBestRoute(&this->ruta);
     } else {
-   //If they are on different lines
+        //If they are on different lines
+        beginLeftFinalCount[0] = 0;
+        beginLeftFinalCount[1] = 0;
+        beginRightFinalCount[0] = 0;
+        beginRightFinalCount[1] = 0;
+        list<Estaciones> rutaOptima = *differentLineSolve();
+        printBestRoute(&rutaOptima);
+    }
+    
+}
+
+list<Estaciones>* Pathsolver::differentLineSolve() {
+    beginRoute[0] = false;
+    beginRoute[1] = false;
+    endRoute[0] = false;
+    endRoute[1] = false;
+    Estaciones beginRouteFloyd[2];
+    Estaciones endRouteFloyd[2];
+
+    if(inicio.getTipo() == -1) {
+        
+        /* --------------------- Begin left -------------------------  */
+        int start = inicio.getPk_estacionid();
+        while(allStations.at(start).getTipo() == -1 && allStations.at(start).getLinea() == inicio.getLinea()) {
+            beginLeftFinal[0].push_back(allStations.at(start));
+            beginLeftFinal[1].push_back(allStations.at(start));
+            beginLeftFinalCount[0]++;
+            beginLeftFinalCount[1]++;
+            start--;
+            if(start < 0 || start > allStations.size()) break;
+            if(allStations.at(start).getTipo() != -1) beginRoute[0] = true;
+        }
+        
+        //If begin left is a valid route, then save left connection point
+        if(beginRoute[0]) beginRouteFloyd[0] = allStations.at(start);
+
+        /* --------------------  Begin Right ------------------------  */
+        start = inicio.getPk_estacionid();
+        while(allStations.at(start).getTipo() == -1 && allStations.at(start).getLinea() == inicio.getLinea()) {
+            beginRightFinal[0].push_back(allStations.at(start));
+            beginRightFinal[1].push_back(allStations.at(start));
+            beginRightFinalCount[0]++;
+            beginRightFinalCount[1]++;
+            start++;
+            if(start < 0 || start > allStations.size()) break;
+            if(allStations.at(start).getTipo() != -1) beginRoute[1] = true;
+        }
+        
+        //If begin right is a valid route, then save right connection point
+        if(beginRoute[1]) beginRouteFloyd[1] = allStations.at(start);
+        
+        /* ---------------------- End Left --------------------------- */
+        //Create insertion pointers for End left
+        indexone = (int)beginLeftFinal[0].size();
+        pointerRuta = beginLeftFinal[0].begin();
+        for(int i = 0; i < beginLeftFinal[0].size(); i++) pointerRuta++;
+        pointerRuta++;
+        
+        indexthree = (int)beginRightFinal[0].size();
+        pointerRutaSecond = beginRightFinal[0].begin();
+        for(int i = 0; i < beginRightFinal[0].size(); i++) pointerRutaSecond++;
+        pointerRutaSecond++;
+        
+        //Insert end left route to beginleft and begin right
+        int end = fin.getPk_estacionid();
+        while(allStations.at(end).getTipo() == -1 && allStations.at(end).getLinea() == fin.getLinea()) {
+            if(beginRoute[0]) beginLeftFinal[0].insert(--pointerRuta, allStations.at(end));
+            if(beginRoute[1]) beginRightFinal[0].insert(--pointerRutaSecond, allStations.at(end));
+            beginLeftFinalCount[0]++;
+            beginRightFinalCount[0]++;
+            end--;
+            if(end < 0 || end > allStations.size()) break;
+            if(allStations.at(end).getTipo() != -1) endRoute[0] = true;
+        }
+        
+        //If end left is a valid route, then save left connection point
+        if(endRoute[0]) endRouteFloyd[0] = allStations.at(end);
+        
+        /* ---------------------  End Right  --------------------------  */
+        //Create insertion pointers for End Right
+        indextwo = (int)beginLeftFinal[1].size();
+        pointerRuta = beginLeftFinal[1].begin();
+        for(int i = 0; i < beginLeftFinal[1].size(); i++) pointerRuta++;
+        pointerRuta++;
+        
+        indexfour = (int)beginRightFinal[1].size();
+        pointerRutaSecond = beginRightFinal[1].begin();
+        for(int i = 0; i < beginRightFinal[1].size(); i++) pointerRutaSecond++;
+        pointerRutaSecond++;
+        
+        //End Right
+        end = fin.getPk_estacionid();
+        while(allStations.at(end).getTipo() == -1 && allStations.at(end).getLinea() == fin.getLinea()) {
+            if(beginRoute[0]) beginLeftFinal[1].insert(--pointerRuta, allStations.at(end));
+            if(beginRoute[1]) beginRightFinal[1].insert(--pointerRutaSecond, allStations.at(end));
+            beginLeftFinalCount[1]++;
+            beginRightFinalCount[1]++;
+            end++;
+            if(end < 0 || end > allStations.size()) break;
+            if(allStations.at(end).getTipo() != -1) endRoute[1] = true;
+        }
+        
+        //If end right is a valid route, then save right connection point
+        if(endRoute[1]) endRouteFloyd[1] = allStations.at(end);
+        /*--------------------------------------------------------------------*/
         
         
+        //Do floyd for all valid routes
+        //end left / begin left
+        if(endRoute[0] && beginRoute[0]) {
+            if(endRouteFloyd[0].getTipo() == beginRouteFloyd[0].getTipo()) {
+                //Create pointer for insertion point
+                pointerRuta = beginLeftFinal[0].begin();
+                for(int i = 0; i < indexone; i++) pointerRuta++;
+                pointerRuta++;
+                
+                //Insert floyd route into list
+                beginLeftFinal[0].insert(--pointerRuta, endRouteFloyd[0]);
+                beginLeftFinalCount[0]++;
+                
+            } else {
+                floyd(&beginLeftFinal[0], beginRouteFloyd[0].getPk_estacionid(), endRouteFloyd[0].getPk_estacionid(), &indexone, &beginLeftFinalCount[0]);
+            }
+        }
+        //end right / begin left
+        if(endRoute[1] && beginRoute[0]) {
+            if(endRouteFloyd[1].getTipo() == beginRouteFloyd[0].getTipo()) {
+                //Create pointer for insertion point
+                pointerRuta = beginLeftFinal[1].begin();
+                for(int i = 0; i < indextwo; i++) pointerRuta++;
+                pointerRuta++;
+                
+                //Insert floyd route into list
+                beginLeftFinal[1].insert(--pointerRuta, endRouteFloyd[1]);
+                beginLeftFinalCount[1]++;
+                
+            } else {
+                floyd(&beginLeftFinal[1], beginRouteFloyd[0].getPk_estacionid(), endRouteFloyd[1].getPk_estacionid(), &indextwo, &beginLeftFinalCount[1]);
+            }
+        }
+        //end left / begin right
+        if(endRoute[0] && beginRoute[1]) {
+            if(endRouteFloyd[0].getTipo() == beginRouteFloyd[1].getTipo()) {
+                //Create pointer for insertion point
+                pointerRuta = beginRightFinal[0].begin();
+                for(int i = 0; i < indexthree; i++) pointerRuta++;
+                pointerRuta++;
+                
+                //Insert floyd route into list
+                beginRightFinal[0].insert(--pointerRuta, endRouteFloyd[0]);
+                beginRightFinalCount[0]++;
+                
+            } else {
+                floyd(&beginRightFinal[0], beginRouteFloyd[1].getPk_estacionid(), endRouteFloyd[0].getPk_estacionid(), &indexthree, &beginRightFinalCount[0]);
+            }
+        }
+        //end right / begin right
+        if(endRoute[1] && beginRoute[1]) {
+            if(endRouteFloyd[1].getTipo() == beginRouteFloyd[1].getTipo()) {
+                //Create pointer for insertion point
+                pointerRuta = beginRightFinal[1].begin();
+                for(int i = 0; i < indexfour; i++) pointerRuta++;
+                pointerRuta++;
+                
+                //Insert floyd route into list
+                beginRightFinal[1].insert(--pointerRuta, endRouteFloyd[1]);
+                beginRightFinalCount[1]++;
+                
+            } else {
+                floyd(&beginRightFinal[1], beginRouteFloyd[1].getPk_estacionid(), endRouteFloyd[1].getPk_estacionid(), &indexthree, &beginRightFinalCount[1]);
+            }
+        }
         
         
     }
     
-    printBestRoute();
+    //Create minimum variable
+    int minimo = 99;
+    
+    if(beginRoute[0] && endRoute[0]) {
+        if(beginLeftFinalCount[0] < minimo) {
+            rutaOptima = beginLeftFinal[0];
+            minimo = beginLeftFinalCount[0];
+        }
+    }
+    
+    if(beginRoute[1] && endRoute[0]) {
+        if(beginRightFinalCount[0] < minimo) {
+            rutaOptima = beginRightFinal[0];
+            minimo = beginRightFinalCount[0];
+        }
+    }
+    
+    if(endRoute[0] && endRoute[1]) {
+        if(beginLeftFinalCount[1] < minimo) {
+            rutaOptima = beginLeftFinal[1];
+            minimo = beginLeftFinalCount[1];
+        }
+    }
+    
+    if(endRoute[1] && endRoute[1]) {
+        if(beginRightFinalCount[1] < minimo) {
+            rutaOptima = beginRightFinal[1];
+        }
+    }
+    
+    return &rutaOptima;
 }
 
-bool Pathsolver::sameLineSolve(int* start, int* end, bool* reverse) {
+bool Pathsolver::sameLineSolve(list<Estaciones>* lista, int* start, int* end, bool* reverse) {
     bool floydFlag = false;
     int startLocal = *start;
     int endLocal = *end;
-    int cont = -1;
     insertIndex = 0;
 
     while ((startLocal != endLocal) && (floydFlag == false)) {
         //If it is not a connection point
         if(allStations.at(startLocal).getTipo() == -1) {
-            if (allStations.at(startLocal).getPk_estacionid() != inicio.getPk_estacionid()) {
-                ruta.push_back(allStations.at(startLocal));
-            }
+            
+            //Insert station into list
+            lista->push_back(allStations.at(startLocal));
+            insertIndex++;
+            
+            //Add / Subtract from position
             *start = ((*reverse) ? --*start : ++*start);
             startLocal = ((*reverse) ? --startLocal : ++startLocal);
-            cont++;
-            insertIndex++;
+            
         } else {
             //If it is a connection point
             floydFlag = true;
         }
     }
-    insertIndex = insertIndex + cont;
+    //insertIndex = insertIndex + cont;
     if(floydFlag) {
         //Create pointer to insertion point
-        pointerRuta = ruta.begin();
+        pointerRuta = lista->begin();
         for(int i = 0; i < insertIndex; i++) pointerRuta++;
-    
+        pointerRuta++;
         
         //Start traveling the opposite direction until finding crosspoint
         bool connectionPoint = false;
         while ((endLocal != startLocal) && (!connectionPoint)) {
             if(allStations.at(endLocal).getTipo() == -1) {
-                if(allStations.at(endLocal).getPk_estacionid() != fin.getPk_estacionid()) {
-                    ruta.insert(pointerRuta, allStations.at(endLocal));
-                    pointerRuta--;
-                }
+                
+                //Insert station into list
+                lista->insert(--pointerRuta, allStations.at(endLocal));
+
+                //Add / Subtract position
                 *end = ((!*reverse) ? --*end : ++*end);
                 endLocal = ((!*reverse) ? --endLocal : ++endLocal);
                 
@@ -185,7 +389,7 @@ bool Pathsolver::sameLineSolve(int* start, int* end, bool* reverse) {
             }
         }
     }
-    insertIndex = insertIndex - cont;
+    //insertIndex = insertIndex - cont;
     return floydFlag;
 }
 
@@ -260,22 +464,110 @@ bool Pathsolver::sameLineVerify() {
 }
 
 //Print route to screen
-void Pathsolver::printBestRoute() {
-    //Presentation to start traveling if start is not a connection point
-    if(inicio.getTipo() == -1) {
-        cout << "Tomar la linea " << inicio.getLinea() << ", estacion " << inicio.getNombre() << ", con direccion a ";
-        cout << getDirection(inicio.getLinea(), inicio.getNumero(), fin.getNumero()) << endl;
-        cout << "Pasara por las estaciones: " << endl;
-    } else {
-        cout << "Tomar la linea " << ruta.front().getLinea() << ", estacion " << inicio.getNombre() << ", con direccion a ";
-        //direction to
-        cout << "Pasara por las estaciones: " << endl;
-    }
+void Pathsolver::printBestRoute(list<Estaciones>* lista) {
     
-    for(Estaciones estacion : ruta) cout << estacion.getNombre() << endl;
+    //Variables
+    int count = 0;
+    int transbordos = 0;
+    int lineaactual = inicio.getLinea();
+    int nextline = 0;
+    int numeroactual = 0;
+    int nextnumber = 0;
     
-    cout << "Bajar en la estacion " << allStations.at(fin.getPk_estacionid()).getNombre() << endl;;
+    //Create pointer for first item
+    pointerRuta = lista->begin();
+    pointerRutaSecond = lista->begin();
+    pointerRutaSecond++;
 
+
+    //Presentation to start traveling if start is not a connection point
+    cout << endl;
+    cout << "\nTomar la linea " << pointerRuta->getLinea() << ", estacion " << pointerRuta->getNombre() << ", con direccion a ";
+    cout << getDirection(pointerRuta->getLinea(), pointerRuta->getNumero(), pointerRuta++->getNumero()) << endl;
+    pointerRutaSecond++;
+    count++;
+    cout << "Pasara por las estaciones: " << endl;
+
+    while(pointerRuta != lista->end()) {
+            
+        vector<Estaciones> firstVec;
+        vector<Estaciones> secondVec;
+        
+        if(pointerRuta->getTipo() != -1) {
+            for(Estaciones estacion : allStations) {
+                if(estacion.getTipo() == pointerRuta->getTipo()) {
+                    firstVec.push_back(estacion);
+                }
+            }
+        } else {
+            firstVec.push_back(*pointerRuta);
+        }
+        
+        if(pointerRutaSecond->getTipo() != -1) {
+            for(Estaciones estacion : allStations) {
+                if(estacion.getTipo() == pointerRutaSecond->getTipo()) {
+                    secondVec.push_back(estacion);
+                }
+            }
+        } else {
+            secondVec.push_back(*pointerRutaSecond);
+        }
+    
+    
+        for(Estaciones estacion1 : firstVec) {
+            for(Estaciones estacion2 : secondVec) {
+                if(estacion1.getLinea() == estacion2.getLinea()) {
+                    nextline = estacion2.getLinea();
+                    numeroactual = estacion1.getNumero();
+                    nextnumber = estacion2.getNumero();
+                }
+            }
+        }
+        
+
+        if(lineaactual != nextline) {
+            cout << "\nBajar en la estacion " << pointerRuta->getNombre() << endl;
+            cout << "Transbordar a la linea " << nextline << " con direccion ";
+            cout << getDirection(nextline, numeroactual, nextnumber) << endl;
+            lineaactual = nextline;
+            transbordos++;
+            
+        } else {
+            cout << "*" << pointerRuta->getNombre() << endl;
+            printInterestPoints(pointerRuta->getPk_estacionid());
+        }
+        
+        if(pointerRuta->getTipo() != -1 && pointerRutaSecond->getTipo() != -1) {
+            count = count + matrizM[pointerRuta->getTipo()][pointerRutaSecond->getTipo()];
+        } else {
+            count++;
+        }
+        
+        pointerRuta++;
+        pointerRutaSecond++;
+
+    } // end while looop
+    cout << "Bajar en la estacion " << pointerRuta.operator--()->getNombre() << endl;
+    cout << "Has llegado a tu destino." << endl;
+    cout << "\nTiempo estimado: " << count << endl;
+    cout << "Numero de transbordos: " << transbordos << endl;
+}
+
+void Pathsolver::printInterestPoints(int fk_id) {
+    vector<InterestPoints> vector;
+    for(InterestPoints punto : puntosInteresLista) {
+        if(punto.getFk_estacionid() == fk_id) {
+            vector.push_back(punto);
+        }
+    }
+    if(vector.size() > 0) {
+        cout << endl;
+        cout << "\tPuntos de Interes: " << endl;
+        for(InterestPoints punto : vector) {
+            cout << "\t*" << punto.getNombre() << endl;
+        }
+        cout << endl;
+    }
 }
 
 //Quick sort function
@@ -328,6 +620,34 @@ int Pathsolver::binarySearch(vector<Estaciones> list, string value, int min, int
 //Binary search overload function
 int Pathsolver::binarySearch(vector<Estaciones> list, string value) {
     return binarySearch(list, value, 0, (int)list.size() - 1);
+}
+
+void Pathsolver::loadInterestPoints() {
+    try {
+        //Create SQL variables
+        sql::Statement *statement;
+        sql::ResultSet *resultSet;
+        statement = connection->createStatement();
+        resultSet = statement->executeQuery("SELECT * FROM puntosinteres ");
+        
+        //Iterate through result set
+        while(resultSet->next()) {
+            int pkid = resultSet->getInt("fk_estacionid");
+            string nombre = resultSet->getString("nombre");
+
+            //Create new station from result set
+            InterestPoints punto = *new InterestPoints(pkid, nombre);
+            
+            //Insert station into list
+            this->puntosInteresLista.push_back(punto);
+        }
+        //Delete pointers
+        delete resultSet;
+        delete statement;
+        
+    } catch (sql::SQLException &e) {
+        cout << "SQL Error: " << e.getErrorCode() << endl;
+    }
 }
 
 
@@ -411,9 +731,34 @@ void Pathsolver::readRecursiveMatrixT(int i, int j) {
     if (matrizT[i][j] == 99) {
         
     } else {
-        //Create pointer for insertion point
+        //Find position of insertion
         pointerFloyd = floydRuta.begin();
-        ++pointerFloyd;
+        while(*pointerFloyd != i) {
+            pointerFloyd++;
+        }
+        pointerFloyd++;
+    
+        //Insert value and call function again
+        floydRuta.insert(pointerFloyd, matrizT[i][j]);
+        readRecursiveMatrixT(i, matrizT[i][j]);
+        readRecursiveMatrixT(matrizT[i][j], j);
+    }
+}
+
+void Pathsolver::readRecursiveMatrixT(int i, int j, int* count) {
+    if (matrizT[i][j] == 99) {
+        //Add cost to route total cost
+        *count = *count + matrizM[i][j];
+    } else {
+        //Find position of insertion
+        pointerFloyd = floydRuta.begin();
+        while(*pointerFloyd != i) {
+            pointerFloyd++;
+        }
+        pointerFloyd++;
+        
+        //Add cost to route total cost
+        *count = *count + matrizM[i][j];
         
         //Insert value and call function again
         floydRuta.insert(pointerFloyd, matrizT[i][j]);
@@ -422,26 +767,37 @@ void Pathsolver::readRecursiveMatrixT(int i, int j) {
     }
 }
 
-void Pathsolver::floyd(int start, int end, bool reverse) {
+//Function to solve floyd route
+void Pathsolver::floyd(list<Estaciones>* lista, int start, int end, int* insertindex) {
     //Add start and end to list
-    floydRuta.push_back(allStations.at((reverse) ? end : start).getTipo());
-    floydRuta.push_back(allStations.at((reverse) ? start : end).getTipo());
+    floydRuta.push_back(allStations.at(start).getTipo());
+    floydRuta.push_back(allStations.at(end).getTipo());
+    
     //Call recursive matrix reader
     readRecursiveMatrixT(allStations.at(start).getTipo(), allStations.at(end).getTipo());
-    
-
+        
     //Insert floyd stations into route
-    floydInsert(reverse);
-
+    floydInsert(lista, insertindex);
 }
 
-void Pathsolver::floydInsert(bool reverse) {
-    //Create pointer to insertion point on
-    insertIndex--;
-    pointerRuta = ruta.begin();
-    for(int i = 0; i < insertIndex; i++) pointerRuta++;
-    if(reverse) pointerRuta++;
+void Pathsolver::floyd(list<Estaciones>* lista, int start, int end, int* insertindex, int* count) {
+    //Add start and end to list
+    floydRuta.push_back(allStations.at(start).getTipo());
+    floydRuta.push_back(allStations.at(end).getTipo());
+    *count = *count + 2;
+    
+    //Call recursive matrix reader
+    readRecursiveMatrixT(allStations.at(start).getTipo(), allStations.at(end).getTipo(), count);
+    
+    //Insert floyd stations into route
+    floydInsert(lista, insertindex);
+}
 
+//Function to insert floyd route into route list
+void Pathsolver::floydInsert(list<Estaciones>* lista, int* insertindex) {
+    //Create pointer to insertion point on
+    pointerRuta = lista->begin();
+    for(int i = 0; i < *insertindex; i++) pointerRuta++;
     
     //Obtain each station and add to list
     for (int estacion : floydRuta) {
@@ -466,17 +822,16 @@ void Pathsolver::floydInsert(bool reverse) {
                 
                 //Create new station from result and insert into ruta
                 Estaciones estacion = *new Estaciones(pkid,linea,numero,nombre,tipo,status);
-                if(reverse) {
-                    ruta.insert(--pointerRuta, estacion);
-                } else {
-                    ruta.insert(pointerRuta, estacion);
-                }
+ 
+                lista->insert(pointerRuta, estacion);
+       
             
             }
         } catch (sql::SQLException &e) {
             cout << "SQL Error: " << e.getErrorCode() << endl;
         }
     }
+    floydRuta.clear();
 }
 
 //Function to print stations when needed

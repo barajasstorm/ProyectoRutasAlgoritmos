@@ -11,11 +11,10 @@
 #include <cppconn/exception.h>
 #include "database_connector.hpp"
 #include "matrices.hpp"
-#include "linked_list.hpp"
 #include "estaciones.hpp"
 #include "pathsolver.hpp"
 
-enum option { AGAIN = 1, EXIT };
+using namespace std;
 
 int main(void) {
     
@@ -27,24 +26,30 @@ int main(void) {
         //Create matrix instance and solve floyd matrix
         Matrices matrix = *new Matrices(connection);
 
-        std::cout << "************************************************" << std::endl;
-        std::cout << "*           Proyecto Lineas de Tren            *" << std::endl;
-        std::cout << "*          Elaborado por: John Poker           *" << std::endl;
-        std::cout << "************************************************" << std::endl;
+        cout << "************************************************" << endl;
+        cout << "*           Proyecto Lineas de Tren            *" << endl;
+        cout << "*         Elaborado por: Juan Barajas          *" << endl;
+        cout << "************************************************" << endl;
+        cout << endl;
         
-        std::cout << std::endl;
-        
+        int input = 0;
         do{
-            //Input station values
-            std::string inicio, fin;
-            std::cout << "Indicar estacion de inicio: ";
-            std::getline(std::cin, inicio);
-            std::cout << "Indicar estacion final: ";
-            std::getline(std::cin, fin);
+            string inicio, fin;
+            cout << "Indicar estacion de inicio: ";
+            getline(cin, inicio);
+            cout << "Indicar estacion final: ";
+            getline(cin, fin);
             
-            //Create test station
+            
+            //Create session
             Pathsolver session = Pathsolver(connection, inicio, fin, matrix.getMatrizM(), matrix.getMatrizT());
-        }while();
+            
+            cout << endl;
+            cout << "Desea calcular otra ruta? (1. Si, 2. No): ";
+            cin >> input;
+            cout << endl << endl;
+            cin.ignore();
+        }while(input == 1);
          
         
         

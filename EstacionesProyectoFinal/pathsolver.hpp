@@ -15,6 +15,7 @@
 #include <vector>
 #include <mysql_connection.h>
 #include "estaciones.hpp"
+#include "interest_points.hpp"
 
 
 using namespace std;
@@ -34,19 +35,35 @@ private:
     int** matrizT;
     Estaciones inicio;
     Estaciones fin;
+    list<Estaciones> rutaOptima;
     list<Estaciones> ruta;
+    list<Estaciones> beginLeftFinal[2];
+    list<Estaciones> beginRightFinal[2];
     list<int> floydRuta;
     list<int>::iterator pointerFloyd;
     list<Estaciones>::iterator pointerRuta;
+    list<Estaciones>::iterator pointerRutaSecond;
     list<Estaciones> linea1;
     list<Estaciones> linea2;
     list<Estaciones> linea3;
     list<Estaciones> linea4;
     list<Estaciones> linea5;
     list<Estaciones> linea6;
+    list<InterestPoints> puntosInteresLista;
     vector<Estaciones> allStations;
     vector<Estaciones> allStationsOrdered;
+    bool beginRoute[2];
+    bool endRoute[2];
+    int beginLeftFinalCount[2];
+    int beginRightFinalCount[2];
     int insertIndex;
+    int indexone;
+    int indextwo;
+    int indexthree;
+    int indexfour;
+    
+    //Diferent Liness
+    list<Estaciones>* differentLineSolve();
     
     void loadIndividualLines();
     void loadAllStations(vector<Estaciones>* list);
@@ -57,12 +74,16 @@ private:
     bool sameLineVerify();
     string getDirection(int linea, int start, int end);
     void readRecursiveMatrixT(int i, int j);
-    void printBestRoute();
+    void readRecursiveMatrixT(int i, int j, int*);
+    void printBestRoute(list<Estaciones>*);
     bool sameCrossPointVerify(int, int);
-    bool sameLineSolve(int*, int*, bool*);
-    void floyd(int, int, bool);
-    void floydInsert(bool);
-    
+    bool sameLineSolve(list<Estaciones>*, int*, int*, bool*);
+    void floyd(list<Estaciones>*, int, int, int*);
+    void floyd(list<Estaciones>*, int, int, int*, int*);
+    void floydInsert(list<Estaciones>*, int*);
+    void printInterestPoints(int fk_id);
+    void loadInterestPoints();
+    void lineSwitch();
 
     
     
