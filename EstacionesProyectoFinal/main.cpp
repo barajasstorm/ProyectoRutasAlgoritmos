@@ -21,10 +21,9 @@ int main(void) {
     try {
         //Create connection class instance, connect to database, and save connection pointer
         Connector connect;
-        sql::Connection *connection = connect.getConnection();
         
         //Create matrix instance and solve floyd matrix
-        Matrices matrix = *new Matrices(connection);
+        Matrices matrix = *new Matrices(connect.getConnection());
 
         cout << "************************************************" << endl;
         cout << "*           Proyecto Lineas de Tren            *" << endl;
@@ -34,6 +33,7 @@ int main(void) {
         
         int input = 0;
         do{
+            
             string inicio, fin;
             cout << "Indicar estacion de inicio: ";
             getline(cin, inicio);
@@ -42,7 +42,7 @@ int main(void) {
             
             
             //Create session
-            Pathsolver session = Pathsolver(connection, inicio, fin, matrix.getMatrizM(), matrix.getMatrizT());
+            Pathsolver session = Pathsolver(connect.getConnection(), inicio, fin, matrix.getMatrizM(), matrix.getMatrizT());
             
             cout << endl;
             cout << "Desea calcular otra ruta? (1. Si, 2. No): ";
@@ -64,8 +64,7 @@ int main(void) {
         
         
         
-        delete connection;
-        //Deconstruct all objects and pointers
+       
         
     } catch (sql::SQLException &e) {
         cout << "SQL Error: " << e.getErrorCode() << endl;

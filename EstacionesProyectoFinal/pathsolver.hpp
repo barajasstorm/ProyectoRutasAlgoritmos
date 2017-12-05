@@ -43,6 +43,8 @@ private:
     list<int>::iterator pointerFloyd;
     list<Estaciones>::iterator pointerRuta;
     list<Estaciones>::iterator pointerRutaSecond;
+    list<Estaciones>::iterator pointerRutaThird;
+    list<Estaciones>::iterator pointerRutaFourth;
     list<Estaciones> linea1;
     list<Estaciones> linea2;
     list<Estaciones> linea3;

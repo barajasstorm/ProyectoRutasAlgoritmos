@@ -18,9 +18,21 @@
 class Connector {
     
 public:
+    //Constructor
     Connector();
+    
+    //Destructor
+    ~Connector();
+    
+    //Getter
     sql::Connection* getConnection();
     
+private:
+    //Connection Field
+    sql::Connection* connection;
+    
+    //Create connection instance
+    void createInstance();
 };
 
 #endif /* database_connector_hpp */

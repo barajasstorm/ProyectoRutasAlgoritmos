@@ -179,6 +179,7 @@ list<Estaciones>* Pathsolver::differentLineSolve() {
             start++;
             if(start < 0 || start > allStations.size()) break;
             if(allStations.at(start).getTipo() != -1) beginRoute[1] = true;
+            
         }
         
         //If begin right is a valid route, then save right connection point
@@ -309,6 +310,8 @@ list<Estaciones>* Pathsolver::differentLineSolve() {
         
     }
     
+    
+    
     //Create minimum variable
     int minimo = 99;
     
@@ -326,14 +329,14 @@ list<Estaciones>* Pathsolver::differentLineSolve() {
         }
     }
     
-    if(endRoute[0] && endRoute[1]) {
+    if(beginRoute[0] && endRoute[1]) {
         if(beginLeftFinalCount[1] < minimo) {
             rutaOptima = beginLeftFinal[1];
             minimo = beginLeftFinalCount[1];
         }
     }
     
-    if(endRoute[1] && endRoute[1]) {
+    if(beginRoute[1] && endRoute[1]) {
         if(beginRightFinalCount[1] < minimo) {
             rutaOptima = beginRightFinal[1];
         }
@@ -465,76 +468,135 @@ bool Pathsolver::sameLineVerify() {
 
 //Print route to screen
 void Pathsolver::printBestRoute(list<Estaciones>* lista) {
-    
+
     //Variables
+    bool cambiodelinea = false;
     int count = 0;
     int transbordos = 0;
     int lineaactual = inicio.getLinea();
     int nextline = 0;
-    int numeroactual = 0;
     int nextnumber = 0;
+    int nextnextnumber = 0;
     
     //Create pointer for first item
     pointerRuta = lista->begin();
     pointerRutaSecond = lista->begin();
+    pointerRutaThird = lista->begin();
     pointerRutaSecond++;
+    pointerRutaThird++;
+    pointerRutaThird++;
 
 
+    vector<Estaciones> firstVec;
+    vector<Estaciones> secondVec;
+    
+    
+    if(pointerRuta->getTipo() != -1) {
+        for(Estaciones estacion : allStations) {
+            if(estacion.getTipo() == pointerRuta->getTipo()) {
+                firstVec.push_back(estacion);
+            }
+        }
+    } else {
+        firstVec.push_back(*pointerRuta);
+    }
+    
+    
+    if(pointerRutaSecond->getTipo() != -1) {
+        for(Estaciones estacion : allStations) {
+            if(estacion.getTipo() == pointerRutaSecond->getTipo()) {
+                secondVec.push_back(estacion);
+            }
+        }
+    } else {
+        secondVec.push_back(*pointerRutaSecond);
+    }
+    
+    for(Estaciones estacion1 : firstVec) {
+        for(Estaciones estacion2 : secondVec) {
+            if(estacion1.getLinea() == estacion2.getLinea()) {
+                nextline = estacion2.getLinea();
+                nextnumber = estacion1.getNumero();
+                nextnextnumber = estacion2.getNumero();
+            }
+        }
+    }
+    
     //Presentation to start traveling if start is not a connection point
     cout << endl;
-    cout << "\nTomar la linea " << pointerRuta->getLinea() << ", estacion " << pointerRuta->getNombre() << ", con direccion a ";
-    cout << getDirection(pointerRuta->getLinea(), pointerRuta->getNumero(), pointerRuta++->getNumero()) << endl;
-    pointerRutaSecond++;
+    cout << "\nTomar la linea " << nextline << ", estacion " << pointerRuta->getNombre() << ", con direccion a ";
+    cout << getDirection(nextline, pointerRuta->getNumero(), pointerRutaSecond->getNumero()) << endl;
     count++;
     cout << "Pasara por las estaciones: " << endl;
+    
+    lineaactual = nextline;
 
     while(pointerRuta != lista->end()) {
+        
+        if(cambiodelinea) {
+            cout << "\nBajar en la estacion " << pointerRuta->getNombre() << endl;
+            printInterestPoints(pointerRuta->getPk_estacionid());
+            cout << "Transbordar a la linea " << nextline << " con direccion ";
+            cout << getDirection(nextline, nextnumber, nextnextnumber) << endl << endl;
+            lineaactual = nextline;
+            transbordos++;
+        }
+        
             
         vector<Estaciones> firstVec;
         vector<Estaciones> secondVec;
         
-        if(pointerRuta->getTipo() != -1) {
-            for(Estaciones estacion : allStations) {
-                if(estacion.getTipo() == pointerRuta->getTipo()) {
-                    firstVec.push_back(estacion);
-                }
-            }
-        } else {
-            firstVec.push_back(*pointerRuta);
-        }
         
         if(pointerRutaSecond->getTipo() != -1) {
             for(Estaciones estacion : allStations) {
                 if(estacion.getTipo() == pointerRutaSecond->getTipo()) {
+                    firstVec.push_back(estacion);
+                }
+            }
+        } else {
+            firstVec.push_back(*pointerRutaSecond);
+        }
+
+        
+        if(pointerRutaThird->getTipo() != -1) {
+            for(Estaciones estacion : allStations) {
+                if(estacion.getTipo() == pointerRutaThird->getTipo()) {
                     secondVec.push_back(estacion);
                 }
             }
         } else {
-            secondVec.push_back(*pointerRutaSecond);
+            secondVec.push_back(*pointerRutaThird);
         }
-    
+
     
         for(Estaciones estacion1 : firstVec) {
             for(Estaciones estacion2 : secondVec) {
                 if(estacion1.getLinea() == estacion2.getLinea()) {
                     nextline = estacion2.getLinea();
-                    numeroactual = estacion1.getNumero();
-                    nextnumber = estacion2.getNumero();
+                    nextnumber = estacion1.getNumero();
+                    nextnextnumber = estacion2.getNumero();
                 }
             }
         }
         
-
-        if(lineaactual != nextline) {
-            cout << "\nBajar en la estacion " << pointerRuta->getNombre() << endl;
-            cout << "Transbordar a la linea " << nextline << " con direccion ";
-            cout << getDirection(nextline, numeroactual, nextnumber) << endl;
-            lineaactual = nextline;
-            transbordos++;
-            
+        if(!cambiodelinea) {
+            if(lineaactual != nextline) {
+                cout << "*" << pointerRuta->getNombre() << endl;
+                printInterestPoints(pointerRuta->getPk_estacionid());
+                cambiodelinea = true;
+                
+            } else {
+                cout << "*" << pointerRuta->getNombre() << endl;
+                printInterestPoints(pointerRuta->getPk_estacionid());
+                cambiodelinea = false;
+            }
         } else {
-            cout << "*" << pointerRuta->getNombre() << endl;
-            printInterestPoints(pointerRuta->getPk_estacionid());
+            if(lineaactual != nextline) {
+                cambiodelinea = true;
+                
+            } else {
+                cambiodelinea = false;
+            }
         }
         
         if(pointerRuta->getTipo() != -1 && pointerRutaSecond->getTipo() != -1) {
@@ -545,6 +607,7 @@ void Pathsolver::printBestRoute(list<Estaciones>* lista) {
         
         pointerRuta++;
         pointerRutaSecond++;
+        pointerRutaThird++;
 
     } // end while looop
     cout << "Bajar en la estacion " << pointerRuta.operator--()->getNombre() << endl;
@@ -553,6 +616,7 @@ void Pathsolver::printBestRoute(list<Estaciones>* lista) {
     cout << "Numero de transbordos: " << transbordos << endl;
 }
 
+//Function to print all interest points
 void Pathsolver::printInterestPoints(int fk_id) {
     vector<InterestPoints> vector;
     for(InterestPoints punto : puntosInteresLista) {

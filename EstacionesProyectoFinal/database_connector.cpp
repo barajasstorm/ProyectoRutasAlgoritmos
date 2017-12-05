@@ -15,13 +15,21 @@
 Connector::Connector() {
 }
 
+Connector::~Connector() {
+    delete Connector::connection;
+}
+
 sql::Connection* Connector::getConnection() {
-    sql::Driver *driver;
-    sql::Connection *connection;
-    
-    driver = get_driver_instance();
-    connection = driver->connect("tcp://127.0.0.1:3306", "root", "password1");
-    connection->setSchema("estacionesfinal");
-    
-    return connection;
+    if(Connector::connection == NULL) {
+        createInstance();
+    }
+    return Connector::connection;
+}
+
+void Connector::createInstance() {
+        sql::Driver *driver;
+        driver = get_driver_instance();
+        
+        Connector::connection = driver->connect("tcp://127.0.0.1:3306", "root", "password1");
+        Connector::connection->setSchema("estacionesfinal");
 }
