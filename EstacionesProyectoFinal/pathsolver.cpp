@@ -468,12 +468,12 @@ bool Pathsolver::sameLineVerify() {
 
 //Print route to screen
 void Pathsolver::printBestRoute(list<Estaciones>* lista) {
-
+    
     //Variables
     bool cambiodelinea = false;
     int count = 0;
     int transbordos = 0;
-    int lineaactual = inicio.getLinea();
+    int lineaactual;
     int nextline = 0;
     int nextnumber = 0;
     int nextnextnumber = 0;
@@ -612,7 +612,7 @@ void Pathsolver::printBestRoute(list<Estaciones>* lista) {
     } // end while looop
     cout << "Bajar en la estacion " << pointerRuta.operator--()->getNombre() << endl;
     cout << "Has llegado a tu destino." << endl;
-    cout << "\nTiempo estimado: " << count << endl;
+    cout << "\nTiempo estimado: " << count - 2 << endl;
     cout << "Numero de transbordos: " << transbordos << endl;
 }
 

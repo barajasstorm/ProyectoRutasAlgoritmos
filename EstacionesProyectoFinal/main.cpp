@@ -24,7 +24,6 @@ int main(void) {
         
         //Create matrix instance and solve floyd matrix
         Matrices matrix = *new Matrices(connect.getConnection());
-
         cout << "************************************************" << endl;
         cout << "*           Proyecto Lineas de Tren            *" << endl;
         cout << "*         Elaborado por: Juan Barajas          *" << endl;
@@ -33,6 +32,7 @@ int main(void) {
         
         int input = 0;
         do{
+            
             
             string inicio, fin;
             cout << "Indicar estacion de inicio: ";
@@ -51,18 +51,6 @@ int main(void) {
             cin.ignore();
         }while(input == 1);
          
-        
-        
-
-        
-        
-        
-        
-        
-        
-        
-        
-        
         
        
         
